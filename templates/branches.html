@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Branches</h2>
+
+<div class="card bg-dark p-3 mb-3">
+  <form method="post" action="{{ url_for('branch.create_branch') }}" class="row g-2">
+    <div class="col-md-4"><input class="form-control" name="name" placeholder="Branch name" required></div>
+    <div class="col-md-6"><input class="form-control" name="location" placeholder="Location"></div>
+    <div class="col-md-2"><button class="btn btn-success">Add</button></div>
+  </form>
+</div>
+
+<div class="row">
+  {% for b in branches %}
+  <div class="col-md-4">
+    <div class="card bg-secondary mb-3">
+      <div class="card-body">
+        <h5>{{ b.name }}</h5>
+        <p>{{ b.location }}</p>
+        <form method="post" action="{{ url_for('branch.delete_branch', branch_id=b.id) }}">
+          <button class="btn btn-danger btn-sm" onclick="return confirm('Delete branch?')">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

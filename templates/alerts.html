@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Alerts</h2>
+
+<div class="row">
+  {% for a in alerts %}
+  <div class="col-md-6">
+    <div class="card bg-secondary mb-3">
+      <div class="card-body">
+        <small>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        <p>{{ a.message }}</p>
+        <form method="post" action="{{ url_for('alerts.resolve_alert', alert_id=a.id) }}">
+          {% if not a.resolved %}
+          <button class="btn btn-sm btn-success">Resolve</button>
+          {% else %}
+          <span class="badge bg-success">Resolved</span>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

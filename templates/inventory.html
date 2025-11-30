@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Inventory</h2>
+
+<div class="card bg-dark p-3 mb-3">
+  <form method="get" class="row g-2">
+    <div class="col-auto">
+      <select class="form-select" name="branch" onchange="this.form.submit()">
+        <option value="">All Branches</option>
+        {% for b in branches %}
+        <option value="{{ b.id }}" {% if selected_branch and selected_branch==b.id %}selected{% endif %}>{{ b.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Add Item</button>
+    </div>
+    <div class="col-auto ms-auto">
+      <a href="{{ url_for('report.export_csv') }}" class="btn btn-sm btn-outline-light">Export CSV</a>
+    </div>
+  </form>
+</div>
+
+<div class="row">
+  {% for item in items %}
+  <div class="col-md-6">
+    <div class="card bg-secondary mb-3">
+      <div class="card-body">
+        <h5>{{ item.name }} <small class="text-muted">({{ item.sku }})</small></h5>
+        <p>{{ item.description }}</p>
+        <p>Qty: <strong>{{ item.quantity }}</strong> | Threshold: {{ item.threshold }} | Branch: {{ item.branch.name if item.branch else 'N/A' }}</p>
+        <form method="post" action="{{ url_for('inventory.delete_item', item_id=item.id) }}" style="display:inline;">
+          <button class="btn btn-sm btn-danger" onclick="return confirm('Delete item?')">Delete</button>
+        </form>
+        <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#editModal{{ item.id }}">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1">
+    <div class="modal-dialog">
+      <form method="post" action="{{ url_for('inventory.update_item', item_id=item.id) }}">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit {{ item.name }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input class="form-control mb-2" name="name" value="{{ item.name }}" required>
+            <input class="form-control mb-2" name="sku" value="{{ item.sku }}" disabled>
+            <textarea class="form-control mb-2" name="description">{{ item.description }}</textarea>
+            <input class="form-control mb-2" name="quantity" value="{{ item.quantity }}" type="number">
+            <input class="form-control mb-2" name="threshold" value="{{ item.threshold }}" type="number">
+            <input class="form-control mb-2" name="price" value="{{ item.price }}" type="number" step="0.01">
+            <select class="form-select" name="branch_id">
+              <option value="">-- Select branch --</option>
+              {% for b in branches %}
+              <option value="{{ b.id }}" {% if item.branch and item.branch.id==b.id %}selected{% endif %}>{{ b.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" action="{{ url_for('inventory.create_item') }}">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control mb-2" name="sku" placeholder="SKU" required>
+          <input class="form-control mb-2" name="name" placeholder="Name" required>
+          <textarea class="form-control mb-2" name="description" placeholder="Description"></textarea>
+          <input class="form-control mb-2" name="quantity" type="number" placeholder="Quantity" value="0">
+          <input class="form-control mb-2" name="threshold" type="number" placeholder="Threshold" value="10">
+          <input class="form-control mb-2" name="price" type="number" step="0.01" placeholder="Price">
+          <select class="form-select" name="branch_id">
+            <option value="">-- Select branch --</option>
+            {% for b in branches %}
+            <option value="{{ b.id }}">{{ b.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success">Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,6 @@
+/* Dark theme custom styles */
+body { background-color: #0f1720; color: #e6eef8; }
+.card { border-radius: .6rem; }
+.bg-black { background-color: #0b1220 !important; }
+a { color: #9ad0ff; }
+.navbar-brand { font-weight: 700; }

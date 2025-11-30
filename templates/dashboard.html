@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card bg-dark text-light p-3">
+      <h5>Total Stock</h5>
+      <h2>{{ total_stock }}</h2>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-dark text-light p-3">
+      <h5>Low Stock Items</h5>
+      <h2>{{ low_stock }}</h2>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-dark text-light p-3">
+      <h5>Out of Stock</h5>
+      <h2>{{ out_of_stock }}</h2>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-lg-8">
+    <div class="card bg-dark p-3">
+      <h5>Stock by Branch</h5>
+      <canvas id="branchChart" height="150"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card bg-dark p-3">
+      <h5>Recent Alerts</h5>
+      <ul class="list-group list-group-flush">
+        {% for a in alerts %}
+        <li class="list-group-item bg-black text-light">
+          <small>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</small><br>
+          {{ a.message }}
+        </li>
+        {% else %}
+        <li class="list-group-item bg-black text-light">No alerts</li>
+        {% endfor %}
+      </ul>
+      <a href="{{ url_for('alerts.list_alerts') }}" class="btn btn-sm btn-outline-light mt-2">View all alerts</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const chartData = {{ chart_data|tojson }};
+const labels = chartData.map(c => c.branch);
+const data = chartData.map(c => c.quantity);
+const ctx = document.getElementById('branchChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [{ label: 'Quantity', data: data }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+</script>
+{% endblock %}

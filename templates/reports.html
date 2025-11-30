@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Reports</h2>
+<p>Export current stock as CSV.</p>
+<a class="btn btn-primary" href="{{ url_for('report.export_csv') }}">Export Stock CSV</a>
+
+<table class="table table-dark table-striped mt-3">
+  <thead><tr><th>SKU</th><th>Name</th><th>Qty</th><th>Threshold</th><th>Branch</th></tr></thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.sku }}</td>
+      <td>{{ it.name }}</td>
+      <td>{{ it.quantity }}</td>
+      <td>{{ it.threshold }}</td>
+      <td>{{ it.branch.name if it.branch else '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
